@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能客服系统</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .chat-container {
+            width: 80%;
+            max-width: 800px;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .chat-header {
+            padding: 15px;
+            background-color: #2c3e50;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .message {
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background-color: #2979ff;
+            color: white;
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+            background-color: #e0e0e0;
+            color: #333;
+        }
+        
+        .thinking {
+            align-self: flex-start;
+            font-style: italic;
+            color: #999;
+            margin-left: 10px;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            padding: 15px;
+            background-color: #f0f0f0;
+            border-top: 1px solid #ddd;
+        }
+        
+        #message-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            outline: none;
+            font-size: 1rem;
+        }
+        
+        #send-button {
+            margin-left: 10px;
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        #send-button:hover {
+            background-color: #1a2530;
+        }
+        
+        #send-button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        .welcome-message {
+            text-align: center;
+            color: #7f8c8d;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            智能客服系统
+        </div>
+        <div class="chat-messages" id="chat-messages">
+            <div class="welcome-message">
+                您好！我是智能客服助手，请问有什么可以帮您的吗？
+            </div>
+        </div>
+        <div class="chat-input-container">
+            <input type="text" id="message-input" placeholder="请输入您的问题..." autocomplete="off">
+            <button id="send-button">发送</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const messagesContainer = document.getElementById('chat-messages');
+            const messageInput = document.getElementById('message-input');
+            const sendButton = document.getElementById('send-button');
+            
+            let sessionId = null;
+            let sseSource = null;
+            let isWaitingForResponse = false;
+            
+            // Create a new chat session
+            fetch('/api/chat/newSession', {
+                method: 'POST'
+            })
+            .then(response => response.text())
+            .then(id => {
+                sessionId = id;
+                console.log('Session created: ' + sessionId);
+            })
+            .catch(error => {
+                console.error('Error creating session:', error);
+                addBotMessage('连接服务器失败，请刷新页面重试。');
+            });
+            
+            // Send message function
+            function sendMessage() {
+                const message = messageInput.value.trim();
+                if (message === '' || isWaitingForResponse || !sessionId) return;
+                
+                // Add user message to the chat
+                addUserMessage(message);
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Set waiting state
+                isWaitingForResponse = true;
+                sendButton.disabled = true;
+                
+                // Close previous SSE connection if exists
+                if (sseSource) {
+                    sseSource.close();
+                }
+                
+                // Create thinking indicator
+                const thinkingDiv = document.createElement('div');
+                thinkingDiv.className = 'thinking';
+                thinkingDiv.id = 'thinking-indicator';
+                thinkingDiv.textContent = '正在思考...';
+                messagesContainer.appendChild(thinkingDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                
+                // Setup SSE connection
+                const eventUrl = `/api/chat/stream?sessionId=${sessionId}&message=${encodeURIComponent(message)}`;
+                console.log('Connecting to SSE:', eventUrl);
+                sseSource = new EventSource(eventUrl);
+                
+                sseSource.onopen = function() {
+                    console.log('SSE connection opened');
+                };
+                
+                sseSource.addEventListener('thinking', function(event) {
+                    console.log('Thinking event received');
+                });
+                
+                sseSource.addEventListener('message', function(event) {
+                    console.log('Message event received:', event.data);
+                    
+                    // Remove thinking indicator
+                    const thinkingIndicator = document.getElementById('thinking-indicator');
+                    if (thinkingIndicator) {
+                        thinkingIndicator.remove();
+                    }
+                    
+                    // Add bot message
+                    addBotMessage(event.data);
+                    
+                    // Reset UI state
+                    isWaitingForResponse = false;
+                    sendButton.disabled = false;
+                    
+                    // Close the connection after receiving the message
+                    setTimeout(() => {
+                        if (sseSource) {
+                            console.log('Closing SSE connection after message');
+                            sseSource.close();
+                            sseSource = null;
+                        }
+                    }, 100);
+                });
+                
+                sseSource.addEventListener('error', function(event) {
+                    console.error('SSE Error:', event);
+                    
+                    // Remove thinking indicator
+                    const thinkingIndicator = document.getElementById('thinking-indicator');
+                    if (thinkingIndicator) {
+                        thinkingIndicator.remove();
+                    }
+                    
+                    // Add error message
+                    addBotMessage('抱歉，发生了一个错误，请重试。');
+                    
+                    // Reset UI state
+                    isWaitingForResponse = false;
+                    sendButton.disabled = false;
+                    
+                    // Close connection
+                    if (sseSource) {
+                        sseSource.close();
+                        sseSource = null;
+                    }
+                });
+            }
+            
+            // Add message function for user
+            function addUserMessage(text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message user-message';
+                messageDiv.textContent = text;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Add message function for bot
+            function addBotMessage(text) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message bot-message';
+                messageDiv.textContent = text;
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+            
+            // Event listeners
+            sendButton.addEventListener('click', sendMessage);
+            
+            messageInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+            
+            // Handle page unload
+            window.addEventListener('beforeunload', function() {
+                if (sessionId) {
+                    navigator.sendBeacon(`/api/chat/clearSession?sessionId=${sessionId}`);
+                }
+                if (sseSource) {
+                    sseSource.close();
+                    sseSource = null;
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
