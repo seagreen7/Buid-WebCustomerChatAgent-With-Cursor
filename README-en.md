@@ -1,4 +1,3 @@
-```markdown
 # Intelligent Customer Service System
 
 A smart customer service system based on Spring Boot 2.0 and DeepSeek v3 model, implementing real-time chat functionality using Server-Sent Events (SSE).
@@ -14,7 +13,7 @@ A smart customer service system based on Spring Boot 2.0 and DeepSeek v3 model, 
 ## System Requirements
 
 - Java 8 or later
-- Maven 3.5 or later
+- Maven 3.6 or later
 - DeepSeek API key
 
 ## Installation Steps
@@ -23,25 +22,20 @@ A smart customer service system based on Spring Boot 2.0 and DeepSeek v3 model, 
 
 2. Configure DeepSeek API key:
    Open `src/main/resources/application.properties` file and set your API key:
-   ```
    deepseek.api.key=your-api-key
-   ```
+
 
 3. Edit FAQ document:
-   Modify the `faq.txt` file in the root directory to add your own Q&A content.
+Modify the `faq.txt` file in the root directory to add your own Q&A content.
 
-4. Build the project:
-   ```
-   mvn clean package
-   ```
+4. Build the project:   mvn clean package
 
 5. Run the application:
-   ```
    java -jar target/customer-service-bot-0.0.1-SNAPSHOT.jar
-   ```
+
 
 6. Access the application:
-   Open your browser and visit `http://localhost:8080`
+Open your browser and visit `http://localhost:8080`
 
 ## Usage Instructions
 
@@ -65,13 +59,8 @@ Modify the following settings in `application.properties`:
 ## License
 
 MIT
-``` 
 
-Key translation considerations:
-1. Maintained technical terms in original form (Spring Boot, DeepSeek, SSE, etc.)
-2. Kept file paths and code snippets unchanged
-3. Used common technical translations (e.g., "实时通信" → "real-time communication")
-4. Maintained consistent terminology for key components
-5. Preserved markdown formatting and document structure
-6. Adjusted section titles to common English documentation conventions
-7. Translated interface-related terms to be more user-friendly (e.g., "优雅的用户界面" → "User-friendly interface")
+
+
+
+   
