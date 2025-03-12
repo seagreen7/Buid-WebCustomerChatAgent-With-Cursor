@@ -1,0 +1,37 @@
+﻿**Frequently Asked Questions (FAQ)**
+
+1. **Q:** What are your company's business hours?  
+   **A:** Our business hours are Monday to Friday from 9:00 AM to 6:00 PM, Saturday from 10:00 AM to 4:00 PM. We are closed on Sundays.
+
+2. **Q:** How can I contact customer service?  
+   **A:** You can reach our customer service team through the following channels:  
+      - Phone: 400-123-4567  
+      - Email: support@example.com  
+      - Live Chat: Chat window in the bottom-right corner of our website  
+      - WeChat Official Account: ExampleCompany  
+
+3. **Q:** What is your return and exchange policy?  
+   **A:** We offer a 30-day no-questions-asked return/exchange service. Products must remain in their original packaging and unused condition. Exclusions apply to certain special items; please check the product description page for details.  
+
+4. **Q:** How long does order processing take?  
+   **A:** Orders are typically shipped within 1-2 business days after confirmation. Delays may occur during holidays or special circumstances. Please refer to actual logistics updates for delivery status.  
+
+5. **Q:** How can I check my order status?  
+   **A:** Log in to your account and visit the "My Orders" page to view all order statuses. You may also use the order number and tracking link provided in your order confirmation email.  
+
+6. **Q:** What payment methods do you accept?  
+   **A:** We support WeChat Pay, Alipay, UnionPay, credit cards, and other major payment methods.  
+
+7. **Q:** What is the warranty period for your products?  
+   **A:** Standard products come with a 1-year warranty, while premium products may include a 2-year warranty. For specific warranty terms, refer to the product manual or contact customer service.  
+
+8. **Q:** How is international shipping calculated?  
+   **A:** International shipping fees are determined by destination country/region, package weight, and dimensions. The cost will automatically display at checkout, or you may contact us for an exact quote.  
+
+9. **Q:** How do I join your membership program?  
+   **A:** Register an account on our website and complete identity verification to automatically become a standard member. Upgrade to VIP status by reaching specified spending thresholds to unlock exclusive benefits.  
+
+10. **Q:** When will out-of-stock items be restocked?  
+    **A:** For popular out-of-stock items, click "Restock Notification" on the product page to receive an email or SMS alert when available. You may also contact customer service for estimated restocking dates.  
+
+--- 
